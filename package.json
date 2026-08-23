@@ -1,0 +1,50 @@
+{
+    "name": "kiroku",
+    "version": "0.1.0",
+    "scripts": {
+        "dev": "tsx watch src/server.ts",
+        "build": "tsc",
+        "start": "node dist/server.js",
+        "typecheck": "tsc --noEmit",
+        "lint": "pnpm exec eslint . --max-warnings=0",
+        "lint:fix": "pnpm exec eslint . --fix",
+        "format": "pnpm exec prettier . --write",
+        "format:check": "pnpm exec prettier . --check",
+        "prepare": "husky"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devEngines": {
+        "packageManager": {
+            "name": "pnpm",
+            "version": "^11.22.0",
+            "onFail": "download"
+        }
+    },
+    "type": "module",
+    "dependencies": {
+        "fastify": "^5.12.1"
+    },
+    "devDependencies": {
+        "@eslint/js": "^10.0.1",
+        "@types/node": "^26.2.0",
+        "eslint": "^10.9.0",
+        "eslint-config-prettier": "^10.1.8",
+        "globals": "^17.11.0",
+        "husky": "^9.1.7",
+        "lint-staged": "^17.3.0",
+        "prettier": "^3.9.6",
+        "tsx": "^4.23.12",
+        "typescript": "^5.9.3",
+        "typescript-eslint": "^8.67.0"
+    },
+    "lint-staged": {
+        "*.{js,mjs,cjs,ts,mts,cts,json,yml,yaml,md}": [
+            "prettier --write"
+        ],
+        "*.{js,mjs,cjs,ts,mts,cts}": [
+            "eslint --fix"
+        ]
+    }
+}
