@@ -13,6 +13,8 @@ const envSchema = z.object({
         .default("development"),
 
     DATABASE_URL: z.url(),
+
+    JWT_ACCESS_SECRET: z.string(),
 });
 
 export const envConfig = envSchema.parse(process.env);
