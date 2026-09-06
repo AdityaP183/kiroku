@@ -1,8 +1,9 @@
 import { eq } from "drizzle-orm";
+import { HTTP_STATUS, HTTP_STATUS_MESSAGE } from "../../constants/http.js";
 import { db } from "../../db/db.js";
 import { usersTable } from "../../db/schema/users.js";
 import { AppError } from "../../utils/errors/app-error.js";
-import { HTTP_STATUS, HTTP_STATUS_MESSAGE } from "../../constants/http.js";
+import type { UpdateUserInput } from "./users.schema.js";
 
 async function getUserById(userId: string) {
     const user = await db
@@ -20,4 +21,25 @@ async function getUserById(userId: string) {
     return user[0];
 }
 
-export { getUserById };
+async function handleUpdateUser(payload: UpdateUserInput, userId: string) {
+    const updatedUser = await db
+        .update(usersTable)
+        .set({
+            firstName: payload.firstName,
+            lastName: payload.lastName,
+            image: payload.image,
+        })
+        .where(eq(usersTable.id, userId))
+        .returning();
+    if (updatedUser.length === 0) {
+        throw new AppError(
+            "User not found",
+            HTTP_STATUS.NOT_FOUND,
+            HTTP_STATUS_MESSAGE.NOT_FOUND,
+        );
+    }
+
+    return updatedUser[0];
+}
+
+export { getUserById, handleUpdateUser };

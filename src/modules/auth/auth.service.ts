@@ -133,9 +133,51 @@ async function handleRefreshUserToken(refreshToken: string) {
     return session;
 }
 
+async function handlePasswordChange(
+    userId: string,
+    oldPassword: string,
+    newPassword: string,
+) {
+    const userAccount = await db
+        .select()
+        .from(accountsTable)
+        .where(eq(accountsTable.userId, userId));
+
+    const result = userAccount[0];
+    if (!result) {
+        throw new AppError(
+            "Password invalid!",
+            HTTP_STATUS.UNAUTHORIZED,
+            HTTP_STATUS_MESSAGE.UNAUTHORIZED,
+        );
+    }
+
+    const isPasswordCorrect = await verifyPassword(
+        result.password,
+        oldPassword,
+    );
+    if (!isPasswordCorrect) {
+        throw new AppError(
+            "Password invalid!",
+            HTTP_STATUS.UNAUTHORIZED,
+            HTTP_STATUS_MESSAGE.UNAUTHORIZED,
+        );
+    }
+
+    const newHashedPassword = await hashPassword(newPassword);
+
+    await db
+        .update(accountsTable)
+        .set({
+            password: newHashedPassword,
+        })
+        .where(eq(accountsTable.userId, userId));
+}
+
 export {
     handleLoginUser,
     handleRegisterUser,
     handleLogoutUser,
     handleRefreshUserToken,
+    handlePasswordChange,
 };
