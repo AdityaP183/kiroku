@@ -24,5 +24,23 @@ export const loginUserSchema = z.object({
         .max(255),
 });
 
+export const changePasswordSchema = z
+    .object({
+        oldPassword: z
+            .string()
+            .min(8, "Password must be at least 8 characters")
+            .max(255),
+
+        newPassword: z
+            .string()
+            .min(8, "Password must be at least 8 characters")
+            .max(255),
+    })
+    .refine((data) => data.oldPassword !== data.newPassword, {
+        message: "Old and new password cannot be the same",
+        path: ["newPassword"],
+    });
+
 export type CreateUserInput = z.infer<typeof createUserSchema>;
 export type LoginUserInput = z.infer<typeof loginUserSchema>;
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;

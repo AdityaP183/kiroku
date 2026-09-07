@@ -8,10 +8,15 @@ import {
     generateAccessToken,
     generateRefreshToken,
 } from "../../utils/tokens.js";
-import { createUserSchema, loginUserSchema } from "./auth.schema.js";
+import {
+    changePasswordSchema,
+    createUserSchema,
+    loginUserSchema,
+} from "./auth.schema.js";
 import {
     handleLoginUser,
     handleLogoutUser,
+    handlePasswordChange,
     handleRefreshUserToken,
     handleRegisterUser,
 } from "./auth.service.js";
@@ -97,4 +102,36 @@ async function refreshUserToken(req: FastifyRequest, res: FastifyReply) {
     return res.status(HTTP_STATUS.NO_CONTENT).send();
 }
 
-export { loginUser, logoutUser, refreshUserToken, registerUser };
+async function changeUserPassword(req: FastifyRequest, res: FastifyReply) {
+    const changePasswordPayload = changePasswordSchema.parse(req.body);
+
+    const userId = req.userId;
+
+    await handlePasswordChange(
+        userId,
+        changePasswordPayload.oldPassword,
+        changePasswordPayload.newPassword,
+    );
+
+    const refreshToken = req.cookies.refreshToken;
+
+    if (refreshToken) {
+        await handleLogoutUser(refreshToken);
+    }
+
+    clearAuthCookies(res);
+
+    return response.success(
+        res,
+        HTTP_STATUS.OK,
+        "User password updated successfully!",
+    );
+}
+
+export {
+    loginUser,
+    logoutUser,
+    refreshUserToken,
+    registerUser,
+    changeUserPassword,
+};
