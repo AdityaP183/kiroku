@@ -64,8 +64,8 @@ async function getAllUserDeletionRequests(
 
     return response.success(
         res,
-        HTTP_STATUS.CREATED,
-        "Account deletion request submitted successfully!",
+        HTTP_STATUS.OK,
+        "Account deletion request retrieved successfully!",
         deletionRequests,
     );
 }
